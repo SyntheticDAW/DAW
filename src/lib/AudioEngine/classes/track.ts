@@ -1,6 +1,8 @@
 import { colorAsHex, RGBColorInterface } from "../../ui/interfaces/RGBColorInterface";
 import { AutomationTrack } from "./automation_track";
 import { SProject } from "./project";
+import { AudioClipSource } from "./sources/AudioClipSource";
+import { MidiClipSource } from "./sources/MidiClipSource";
 
 let baseTrackId = 0
 
@@ -13,6 +15,7 @@ export interface TrackOptionsInterface {
     bitDepth?: BitDepth
     project: SProject
     color?: RGBColorInterface;
+    AudioDataSource: AudioClipSource | MidiClipSource;
 }
 
 export type BitDepth = 8 | 16 | 24 | 32;
@@ -28,7 +31,7 @@ export class Track {
         this.automationTracks = [];
 
         baseTrackId++;
-        this.name = `Track ${options.name?.slice(0,25) ?? baseTrackId}`;
+        this.name = options.name?.slice(0,25) ?? 'Track ' + baseTrackId;
         this.uuid = crypto.randomUUID()
         this.color = options.color ? colorAsHex(options.color) : "#300606e5"
     }
