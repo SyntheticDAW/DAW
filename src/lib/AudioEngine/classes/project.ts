@@ -1,4 +1,4 @@
-import { str2hex } from "../../util/stringToHex";
+import { str2hex } from "../../util/encoding/stringToHex";
 import { Track } from "./track";
 
 interface SProjectOptionsInterface {

@@ -1,9 +1,11 @@
+import { decode, encode } from "@msgpack/msgpack";
 import { AutomationTrack } from "./AudioEngine/classes/automation_track";
 import { SProject } from "./AudioEngine/classes/project";
 import { Track } from "./AudioEngine/classes/track";
 import { TrackOptionTips } from "./docs/tips/TrackOptions";
 import { RGBColor, RGBColorInterface } from "./ui/interfaces/RGBColorInterface";
-import { hex2str, str2hex } from "./util/stringToHex";
+import { hex2str, str2hex } from "./util/encoding/stringToHex";
+import { Wavetable } from "./util/encoding/wavetable";
 
 
 export {
@@ -14,5 +16,8 @@ export {
     RGBColor,
     type RGBColorInterface,
     str2hex,
-    hex2str
+    hex2str,
+    Wavetable,
+    decode,
+    encode
 }

@@ -8,6 +8,7 @@ import { MidiClipSource } from './lib/AudioEngine/classes/sources/MidiClipSource
 (window as any).fdgs = fdgs;
 (window as any).a = AudioEngine;
 (window as any).mcs = MidiClipSource;
+
 // (window as any).init = init;
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
