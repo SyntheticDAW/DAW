@@ -1,5 +1,5 @@
 import { Midi, Track } from "@tonejs/midi";
-import { Frequency } from "tone"; // Tone.js helper
+import { Frequency } from "tone";
 
 export interface JsonNote {
   midi: number;

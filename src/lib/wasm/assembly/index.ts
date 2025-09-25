@@ -114,7 +114,7 @@ export class Engine {
 
   // ---------------- Note Triggering ----------------
   triggerNote(trackUUID: string, note: NoteEvent): void {
-    trace(`[${trackUUID}] Play note ${note.midi} at ${note.time.toString()}s`);
+    // trace(`[${trackUUID}] Play note ${note.midi} at ${note.time.toString()}s`);
   }
 }
 
