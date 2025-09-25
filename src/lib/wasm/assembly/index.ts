@@ -55,12 +55,13 @@ export function sendTrackMidi(uuid: string, midiEventsEncoded: ArrayBuffer): boo
     return false
   }
 
-  const midiEventsDecoded: MidiEvent[] = decodeMidiEvents(midiEventsEncoded);
-  consoleLog(midiEventsDecoded[0].note.toString())
+  // const midiEventsDecoded: MidiEvent[] = decodeMidiEvents(midiEventsEncoded);
+  // consoleLog(midiEventsDecoded[0].note.toString())
+  sendSourceDataTo(uuid, midiEventsEncoded)
   return true;
 }
 
-export function getTrack(uuid: string) {
-  return tracks.get(uuid)
-}
-//aa
+// export function getTrack(uuid: string): Track {
+//   return tracks.get(uuid)
+// }
+//aa/a
