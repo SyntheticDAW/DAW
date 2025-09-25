@@ -13,14 +13,16 @@ export interface SyntheticAsset {
     name: string;
     data: Uint8Array
 }
+
 export interface SyntheticPlugin {
     name: string;
-    module: Uint8Array,
-    assets: SyntheticAsset[]
-    author: string
-    version: string
-    authorID?: string;
-    signature?: Uint8Array
+    module: Uint8Array;
+    assets: SyntheticAsset[];
+    author: string;
+    version: string;
+    /** will be added later to prove authneticity and that the plugin has not been tampered with. */
+    // authorID?: string;
+    // signature?: Uint8Array
 }
 
 export function loadPlugin(msgPackedSXP: Uint8Array) {
