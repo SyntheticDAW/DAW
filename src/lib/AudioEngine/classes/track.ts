@@ -26,12 +26,14 @@ export class Track {
     name: string;
     uuid: string;
     color: string;
+    trackNumId: number;
     constructor(options: TrackOptionsInterface) {
         this.bitDepth = options.bitDepth ?? 32;
         this.automationTracks = [];
 
         baseTrackId++;
         this.name = options.name?.slice(0,25) ?? 'Track ' + baseTrackId;
+        this.trackNumId = baseTrackId;
         this.uuid = crypto.randomUUID()
         this.color = options.color ? colorAsHex(options.color) : "#300606e5"
     }

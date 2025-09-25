@@ -1,27 +1,7 @@
-// ---------------- NoteEvent ----------------a
-import { consoleLog } from "./env";//a
+import { consoleLog, fetch128 } from "./env";
+import { decodeMidiEvents, MidiEvent } from "./NoteEvent";
 
-export function log(n: string): void {
-  consoleLog(n)
-}
-export class NoteEvent {
-  midi: i32;       // MIDI note number
-  time: f32;       // start time in seconds
-  duration: f32;   // duration in seconds
-  velocity: f32;   // 0-1//a
-  channel: i32;
-  played: bool = false;
-
-  constructor(midi: i32, time: f32, duration: f32, velocity: f32, channel: i32) {
-    this.midi = midi;
-    this.time = time;
-    this.duration = duration;
-    this.velocity = velocity;
-    this.channel = channel;
-  }
-}
-
-// ---------------- BitDepth Enum ----------------
+/** more like float32 quantization depth when processing */
 export enum BitDepth {
   _8 = 8,
   _16 = 16,
@@ -29,125 +9,58 @@ export enum BitDepth {
   _32 = 32
 }
 
-// ---------------- TrackData ----------------
-export class TrackData {
+export enum MediaType {
+  Audio,
+  Midi,
+}
+
+class Track {
   uuid: string;
+  active: boolean;
+  pluginId: u32;
   bitDepth: BitDepth;
-  bpm: f32;
-  notes: NoteEvent[] = new Array<NoteEvent>();
-  solo: bool = false;
-  mute: bool = false;
-
-  constructor(uuid: string, bitDepth: BitDepth, bpm: f32 = 120.0) {
+  mediaType: MediaType;
+  constructor(uuid: string, active: boolean, pluginId: u32, bitDepth: BitDepth, mediaType: MediaType) {
     this.uuid = uuid;
+    this.active = active;
+    this.pluginId = pluginId;
     this.bitDepth = bitDepth;
-    this.bpm = bpm;
-  }
-
-  addNote(note: NoteEvent): void {
-    this.notes.push(note);
+    this.mediaType = mediaType;
   }
 }
 
-// ---------------- Engine ----------------
-export class Engine {
-  private tracks: TrackData[] = new Array<TrackData>();
-  public bpm: f32;
-  public currentTime: f32 = 0.0;
-  public isPlaying: bool = false;
-  public sampleRate: f32;
+let tracks: Map<string, Track> = new Map();
 
-  constructor(bpm: f32 = 120.0, sampleRate: f32 = 44100.0) {
-    this.bpm = bpm;
-    this.sampleRate = sampleRate;
-  }
+export function linkTrack(uuid: string, pluginId: u32, bitDepth: BitDepth, mediaType: MediaType): string {
+  tracks.set(uuid, new Track(
+    uuid,
+    true,
+    pluginId,
+    bitDepth,
+    mediaType
+  ))
+  return uuid;
+}
 
-  // ---------------- Track Management ----------------
-  addTrack(uuid: string, bitDepth: BitDepth): void {
-    this.tracks.push(new TrackData(uuid, bitDepth, this.bpm));
-  }
-
-  getTrack(uuid: string): TrackData | null {
-    for (let i = 0; i < this.tracks.length; i++) {
-      if (this.tracks[i].uuid == uuid) return this.tracks[i];
-    }
-    return null;
-  }
-
-  getTrackUUIDs(): string[] {
-    const uuids = new Array<string>();
-    for (let i = 0; i < this.tracks.length; i++) {
-      uuids.push(this.tracks[i].uuid);
-    }
-    return uuids;
-  }
-
-  // ---------------- Playback ----------------
-  start(): void { this.isPlaying = true; }
-  stop(): void { this.isPlaying = false; }
-  reset(): void {
-    this.currentTime = 0.0;
-    for (let i = 0; i < this.tracks.length; i++) {
-      const track = this.tracks[i];
-      for (let j = 0; j < track.notes.length; j++) {
-        track.notes[j].played = false;
-      }
-    }
-  }
-
-  secondsPerBeat(): f32 { return 60.0 / this.bpm; }
-
-  step(deltaTime: f32): void {
-    if (!this.isPlaying) return;
-    this.currentTime += deltaTime;
-
-    for (let i = 0; i < this.tracks.length; i++) {
-      const track = this.tracks[i];
-      if (track.mute) continue;
-
-      for (let j = 0; j < track.notes.length; j++) {
-        const note = track.notes[j];
-        if (!note.played && note.time <= this.currentTime) {
-          this.triggerNote(track.uuid, note);
-          note.played = true;
-        }
-      }
-    }
-  }
-
-  stepBlock128(): void { this.step(128.0 / this.sampleRate); }
-
-  // ---------------- Note Triggering ----------------
-  triggerNote(trackUUID: string, note: NoteEvent): void {
-    // trace(`[${trackUUID}] Play note ${note.midi} at ${note.time.toString()}s`);
+export function setTrackIsActive(uuid: string, active: boolean): void {
+  let track = tracks.get(uuid);
+  if (track) {
+    track.active = active
   }
 }
 
-// ---------------- Factory Export Helpers ----------------
-export function createEngine(bpm: f32 = 120.0, sampleRate: f32 = 44100.0): Engine {
-  return new Engine(bpm, sampleRate);
-}
-
-export function addTrack(engine: Engine, uuidPtr: usize, uuidLen: i32, bitDepth: BitDepth): void {
-  const uuid = String.UTF8.decodeUnsafe(uuidPtr, uuidLen, true);
-  engine.addTrack(uuid, bitDepth);
-}
-
-export function addNoteToTrack(
-  engine: Engine,
-  uuidPtr: usize,
-  uuidLen: i32,
-  midi: i32,
-  time: f32,
-  duration: f32,
-  velocity: f32,
-  channel: i32
-): void {
-  const uuid = String.UTF8.decodeUnsafe(uuidPtr, uuidLen, true);
-  const track = engine.getTrack(uuid);
-  if (track != null) {
-    track.addNote(new NoteEvent(midi, time, duration, velocity, channel));
+export function sendTrackMidi(uuid: string, midiEventsEncoded: ArrayBuffer): boolean {
+  let track = tracks.get(uuid)
+  if (track.mediaType == MediaType.Audio) {
+    return false
   }
+
+  const midiEventsDecoded: MidiEvent[] = decodeMidiEvents(midiEventsEncoded);
+  consoleLog(midiEventsDecoded[0].note.toString())
+  return true;
 }
 
-
+export function getTrack(uuid: string) {
+  return tracks.get(uuid)
+}
+//aa
