@@ -1,9 +1,14 @@
-// ---------------- NoteEvent ----------------
+// ---------------- NoteEvent ----------------a
+import { consoleLog } from "./env";//a
+
+export function log(n: string): void {
+  consoleLog(n)
+}
 export class NoteEvent {
   midi: i32;       // MIDI note number
   time: f32;       // start time in seconds
   duration: f32;   // duration in seconds
-  velocity: f32;   // 0-1
+  velocity: f32;   // 0-1//a
   channel: i32;
   played: bool = false;
 
@@ -144,3 +149,5 @@ export function addNoteToTrack(
     track.addNote(new NoteEvent(midi, time, duration, velocity, channel));
   }
 }
+
+

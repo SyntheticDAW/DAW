@@ -3,6 +3,10 @@ import * as fdgs from '../../wasm/build/release';
 import { decode } from '@msgpack/msgpack';
 let globalPluginId = 0;
 
+export interface PluginExports {
+    process128(buffer: Float32Array, startTime?: number): void 
+}
+export let plugins: PluginExports[] = [];
 function incrementPluginId(): number {
     globalPluginId = ++globalPluginId >> 0
     return globalPluginId
@@ -25,10 +29,34 @@ export interface SyntheticPlugin {
     // signature?: Uint8Array
 }
 
-export function loadPlugin(msgPackedSXP: Uint8Array) {
-    const syntheticPluginObject: SyntheticPlugin = decode(msgPackedSXP) as SyntheticPlugin;
-    
+export async function loadPlugin(msgPackedSXP: Uint8Array) {
+  const syntheticPluginObject: SyntheticPlugin = decode(msgPackedSXP) as SyntheticPlugin;
+
+  // Pre-build asset lookup table (optional, by index)
+  const assets = syntheticPluginObject.assets;
+
+  // Create WASM memory if your module doesn't export one
+  const memory = new WebAssembly.Memory({ initial: 2, maximum: 10 }); // adjust size as needed
+
+  const instance = await WebAssembly.instantiate(syntheticPluginObject.module, {
+    env: {
+      memory,
+
+      fetchAsset: (index: number, ptr: number) => {
+        const asset = assets[index];
+        if (!asset) return 0; 
+
+        const bytes = asset.data; 
+        new Uint8Array(memory.buffer, ptr, bytes.length).set(bytes);
+
+        return bytes.length; 
+      }
+    }
+  });
+
+  return { instance, memory, assets };
 }
+
 export class EngineWrapper {
   private engine: any;
   private memory: WebAssembly.Memory;
