@@ -1,0 +1,1 @@
+asc -o example.wasm example.asc.ts --exportRuntime --importMemory && mv ./example.wasm ../../../public/example.wasm
