@@ -1,4 +1,3 @@
-import { link } from "original-fs";
 import { colorAsHex, RGBColorInterface } from "../../ui/interfaces/RGBColorInterface";
 import { linkTrack, setTrackIsActive } from "../../wasm/build/release";
 import { AutomationTrack } from "./automation_track";
@@ -57,5 +56,5 @@ export class Track {
         return this.active
     }
 
-    
+
 }
