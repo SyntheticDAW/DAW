@@ -34,6 +34,12 @@ function createWindow() {
     },
   })
 
+  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    details!.responseHeaders['Cross-Origin-Opener-Policy'] = ['same-origin'];
+    details!.responseHeaders['Cross-Origin-Embedder-Policy'] = ['require-corp'];
+    callback({ responseHeaders: details.responseHeaders });
+  });
+
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())

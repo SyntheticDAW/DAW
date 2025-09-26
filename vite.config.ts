@@ -6,6 +6,7 @@ import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
 const execAsync = promisify(exec)
 
@@ -50,6 +51,7 @@ export default defineConfig({
       preload: { input: path.join(__dirname, 'electron/preload.ts') },
       renderer: {},
     }),
+    tailwindcss(),
 
     {
       name: 'watch-wasm-assembly-and-asbuild',

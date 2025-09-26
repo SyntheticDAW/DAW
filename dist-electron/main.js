@@ -15,6 +15,11 @@ function createWindow() {
       preload: path.join(__dirname, "preload.mjs")
     }
   });
+  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    details.responseHeaders["Cross-Origin-Opener-Policy"] = ["same-origin"];
+    details.responseHeaders["Cross-Origin-Embedder-Policy"] = ["require-corp"];
+    callback({ responseHeaders: details.responseHeaders });
+  });
   win.webContents.on("did-finish-load", () => {
     win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
   });
