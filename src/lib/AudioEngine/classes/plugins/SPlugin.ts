@@ -6,6 +6,7 @@ export enum MediaType {
 }
 
 export let globalPluginID = 0;
+export let pluginArray: SPlugin[];
 
 export class SPlugin {
     pluginId: number;
@@ -20,6 +21,7 @@ export class SPlugin {
         this.pluginInstance = null;
         this.mediaType = null;
         this.loaded = false;
+        pluginArray.push(this)
     }
 
     async load() {

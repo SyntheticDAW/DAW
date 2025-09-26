@@ -1,7 +1,6 @@
-import { consoleLog, fetch128 } from "./env";
+import { consoleLog, fetch128, sendSeqMidi } from "./env";
 import { decodeMidiEvents, MidiEvent } from "./NoteEvent";
 
-/** more like float32 quantization depth when processing */
 export enum BitDepth {
   _8 = 8,
   _16 = 16,
@@ -15,13 +14,12 @@ export enum MediaType {
 }
 
 class Track {
-  uuid: string;
   active: boolean;
   pluginId: u32;
   bitDepth: BitDepth;
   mediaType: MediaType;
-  constructor(uuid: string, active: boolean, pluginId: u32, bitDepth: BitDepth, mediaType: MediaType) {
-    this.uuid = uuid;
+
+  constructor(active: boolean, pluginId: u32, bitDepth: BitDepth, mediaType: MediaType) {
     this.active = active;
     this.pluginId = pluginId;
     this.bitDepth = bitDepth;
@@ -29,39 +27,27 @@ class Track {
   }
 }
 
-let tracks: Map<string, Track> = new Map();
+let tracks: Track[] = [];
 
-export function linkTrack(uuid: string, pluginId: u32, bitDepth: BitDepth, mediaType: MediaType): string {
-  tracks.set(uuid, new Track(
-    uuid,
-    true,
-    pluginId,
-    bitDepth,
-    mediaType
-  ))
-  return uuid;
+export function linkTrack(pluginId: u32, bitDepth: BitDepth, mediaType: MediaType): void {
+  const track = new Track(true, pluginId, bitDepth, mediaType);
+  tracks.push(track);
 }
 
-export function setTrackIsActive(uuid: string, active: boolean): void {
-  let track = tracks.get(uuid);
-  if (track) {
-    track.active = active
+export function setTrackIsActive(trackId: u32, active: boolean): void {
+  if (trackId < tracks.length) {
+    tracks[trackId].active = active;
   }
 }
 
-export function sendTrackMidi(uuid: string, midiEventsEncoded: ArrayBuffer): boolean {
-  let track = tracks.get(uuid)
-  if (track.mediaType == MediaType.Audio) {
-    return false
-  }
+export function sendTrackMidi(trackId: u32, midiEventsEncoded: ArrayBuffer): boolean {
+  if (trackId >= tracks.length) return false;
 
-  // const midiEventsDecoded: MidiEvent[] = decodeMidiEvents(midiEventsEncoded);
-  // consoleLog(midiEventsDecoded[0].note.toString())
-  sendSourceDataTo(uuid, midiEventsEncoded)
+  const track = tracks[trackId];
+  if (track.mediaType === MediaType.Audio) return false;
+
+  const ptr = changetype<usize>(midiEventsEncoded);
+  sendSeqMidi(trackId, ptr, midiEventsEncoded.byteLength);
+
   return true;
 }
-
-// export function getTrack(uuid: string): Track {
-//   return tracks.get(uuid)
-// }
-//aa/a

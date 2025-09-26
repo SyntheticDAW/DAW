@@ -1,10 +1,12 @@
 import { decode } from '@msgpack/msgpack';
 import { MediaType } from '../classes/plugins/SPlugin';
+export * as AudioEngineWasm from '../../wasm/build/release'
 
 export interface PluginInterface {
-  process128: (f32a: Float32Array, startTime: number) => void,
-  pushSourceData: (data: ArrayBuffer) => void
+  process128: (f32a: Float32Array, startTime: number) => void;
+  pushSequencedMidi: (data: ArrayBuffer) => void;
 }
+
 
 export interface SyntheticAsset {
     name: string;
@@ -57,5 +59,3 @@ export async function loadPlugin(msgPackedSXP: Uint8Array): Promise<LoadPluginRe
 
   return { instance, memory, assets, pluginObject: syntheticPluginObject };
 }
-
-export * as fdgs from '../../wasm/build/release'
