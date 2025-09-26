@@ -1,8 +1,11 @@
+import { link } from "original-fs";
 import { colorAsHex, RGBColorInterface } from "../../ui/interfaces/RGBColorInterface";
+import { linkTrack } from "../../wasm/build/release";
 import { AutomationTrack } from "./automation_track";
 import { SProject } from "./project";
 import { AudioClipSource } from "./sources/AudioClipSource";
 import { MidiClipSource } from "./sources/MidiClipSource";
+import { SPlugin } from "./plugins/SPlugin";
 
 let baseTrackId = 0
 
@@ -36,5 +39,9 @@ export class Track {
         this.trackNumId = baseTrackId;
         this.uuid = crypto.randomUUID()
         this.color = options.color ? colorAsHex(options.color) : "#300606e5"
+    }
+
+    setPlugin(plugin: SPlugin) {
+        linkTrack(this.uuid, plugin.pluginId, this.bitDepth, plugin.mediaType)
     }
 }
