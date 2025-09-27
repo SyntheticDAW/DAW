@@ -1,1 +1,5 @@
-asc -o example.wasm example.asc.ts --enable simd --importMemory && mv ./example.wasm ../../../public/example.wasm
+# Compile with asc (AssemblyScript) with SIMD and imported memory
+asc example.asc.ts -b example.wasm --enable simd --importMemory
+
+# Move the output file to the target folder, overwriting if it exists
+mv -f ./example.wasm ../../../public/example.wasm
