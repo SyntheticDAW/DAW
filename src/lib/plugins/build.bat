@@ -1,1 +1,1 @@
-@asc -o example.wasm example.asc.ts --enable simd --enable threads --sharedMemory --initialMemory 64 --maximumMemory 128 --exportRuntime --importMemory && move example.wasm ..\..\..\public\example.wasm
+@asc -o example.wasm example.asc.ts --enable simd --importMemory && move .\example.wasm ..\..\..\public/example.wasm
