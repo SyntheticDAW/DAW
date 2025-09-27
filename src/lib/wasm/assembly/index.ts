@@ -62,4 +62,18 @@ export function sendTrackMidi(trackId: u32, midiEventsEncoded: ArrayBuffer): boo
 export function doArrayBuffer(a: ArrayBuffer): boolean {
   return true;
 }
-//a
+
+export function process(ptr: usize): void {
+  if (tracks.length === 0) return; // nothing to process
+
+  // find first active track with audio type
+  for (let i = 0; i < tracks.length; i++) {
+    const track = tracks[i];
+    if (track.active && track.mediaType === MediaType.Audio) {
+      // call external fetch128, passing pluginId and pointer
+      fetch128(track.pluginId, ptr);
+      return;
+    }
+  }
+}
+//absfc  ss test. im sorryc
