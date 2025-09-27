@@ -5,8 +5,8 @@ export enum MediaType {
   Midi,
 }
 
-export let globalPluginID = 0;
-export let pluginArray: SPlugin[];
+export let globalPluginID = -1;
+export let pluginArray: SPlugin[] = [];
 
 export class SPlugin {
     pluginId: number;

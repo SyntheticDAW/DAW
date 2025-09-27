@@ -7,8 +7,8 @@
     }
   },
   "scripts": {
-    "asbuild:debug": "asc assembly/index.ts --target debug --exportRuntime -b raw --enable simd --sharedMemory --exportMemory --maximumMemory 128 --enable threads",
-    "asbuild:release": "asc assembly/index.ts -b raw --target release --exportRuntime --enable simd --enable threads --exportMemory --maximumMemory 128 --sharedMemory",
+    "asbuild:debug": "asc assembly/index.ts --target debug --exportRuntime -b esm --enable simd",
+    "asbuild:release": "asc assembly/index.ts --target release -b esm --enable simd",
 
     "argumentsbackuprelease": "--target release --exportRuntime -b raw --enable simd --enable threads --exportMemory --maximumMemory 128 --sharedMemory",
     "asbuild": "npm run asbuild:debug && npm run asbuild:release",

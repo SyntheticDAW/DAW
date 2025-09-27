@@ -1,5 +1,6 @@
 import './App.css';
-
+import * as fdgs from './lib/wasm/build/release'
+(window as any).fdgs = fdgs
 function App() {
   return (
     <div className="h-screen w-screen bg-gradient-to-br from-purple-900 via-black to-pink-700 flex flex-col items-center justify-center relative">

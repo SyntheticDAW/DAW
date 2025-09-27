@@ -3,7 +3,7 @@ import { decodeMidiEvents, MidiEvent } from "./NoteEvent";
 
 // Enums
 export enum BitDepth {
-  _8 = 8,
+  _8  = 8,
   _16 = 16,
   _24 = 24,
   _32 = 32
@@ -31,7 +31,7 @@ class Track {
 
 // Global track array
 let tracks = new Array<Track>();
-
+//casf
 // Link a new track
 export function linkTrack(pluginId: u32, bitDepth: BitDepth, mediaType: MediaType): void {
   const track = new Track(true, pluginId, bitDepth, mediaType);
@@ -63,17 +63,31 @@ export function doArrayBuffer(a: ArrayBuffer): boolean {
   return true;
 }
 
-export function process(ptr: usize): void {
+
+
+
+//allocate 128 bit sample buf
+export function alloc128(): usize {
+  return __alloc(128 * 4);
+}
+
+export function processBlock(ptr: usize, sampleStart: i32): void {
+  // consoleLog("woreked")
+  // console.log(tracks.length.toString())
   if (tracks.length === 0) return; // nothing to process
 
   // find first active track with audio type
   for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
-    if (track.active && track.mediaType === MediaType.Audio) {
+    if (track.active) {
       // call external fetch128, passing pluginId and pointer
-      fetch128(track.pluginId, ptr);
+      fetch128(track.pluginId, ptr, sampleStart);
       return;
     }
   }
 }
-//absfc  ss test. im sorryc
+//absfc  ss test. im sorrycaa
+
+// export function testFetch128(): void {
+//   fetch128(0, 5, 0)
+// }
