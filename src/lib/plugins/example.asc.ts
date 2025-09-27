@@ -1,4 +1,4 @@
-
+// Allocate 128 floats
 export function alloc128(): usize {
   return __alloc(128 * 4);
 }
